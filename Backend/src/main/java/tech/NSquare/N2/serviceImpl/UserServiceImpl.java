@@ -35,8 +35,11 @@ public class UserServiceImpl implements userService {
      */
     @Override
     public LoginResponse newLogin(String userAuthToken) {
-
-        String userNamePasswordCombination= Base64.getEncoder().encodeToString(userAuthToken.getBytes());
+        byte[] decodedBytes = Base64.getDecoder().decode(userAuthToken);
+        String decodedStringforUserNamePasswordCombination = new String(decodedBytes);
+        String[] decodedPartedString= decodedStringforUserNamePasswordCombination.split(":");
+        String userNamePasswordCombo = decodedPartedString[0];
+        String userNamePasswordCombination= Base64.getEncoder().encodeToString(userNamePasswordCombo.getBytes());
         Optional<User> userDetails=Optional.empty();
         Token userToken = tokenRepository.findByAuthToken(userNamePasswordCombination);
         if (ObjectUtils.isEmpty(userToken)) {
