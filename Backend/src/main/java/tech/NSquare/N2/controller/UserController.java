@@ -15,12 +15,14 @@ import tech.NSquare.N2.util.NsquareException;
 import static tech.NSquare.N2.models.enums.GeneralErrorEnum.AUTH_TOKEN_NOT_PRESENT;
 
 
-@RestController(URLConstants.BASE_URL)
+@RestController
+@RequestMapping((URLConstants.BASE_URL))
 public class UserController {
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserServiceImpl userServiceImpl;
+
 
     @GetMapping(URLConstants.LOG_IN_URL)
     public ResponseEntity<LoginResponse> isAuthorized(@RequestHeader("auth_token") String authToken) {

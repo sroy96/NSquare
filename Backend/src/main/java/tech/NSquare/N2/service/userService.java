@@ -9,4 +9,6 @@ public interface userService {
 
      User newUserRegister(User user);
 
+//     void forgetPassword(String emailAddress);
+
 }

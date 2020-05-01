@@ -2,19 +2,16 @@ package tech.NSquare.N2.serviceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.BeanUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.NSquare.N2.models.LoginResponse;
 import tech.NSquare.N2.models.Token;
 import tech.NSquare.N2.models.User;
-import tech.NSquare.N2.models.enums.GeneralErrorEnum;
 import tech.NSquare.N2.repository.TokenRepository;
 import tech.NSquare.N2.repository.UserRepository;
 import tech.NSquare.N2.service.userService;
 import tech.NSquare.N2.util.NsquareException;
-
-import java.io.IOException;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -38,8 +35,7 @@ public class UserServiceImpl implements userService {
     @Override
     public LoginResponse newLogin(String userAuthToken) {
 
-        String[] decodedString = new String(Base64.getDecoder().decode(userAuthToken)).split(":");
-        String userNamePasswordCombination = decodedString[0];
+        String userNamePasswordCombination= Base64.getEncoder().encodeToString(userAuthToken.getBytes());
         Token userToken = tokenRepository.findByAuthToken(userNamePasswordCombination);
         if (userToken.get_id().isEmpty()) {
             log.error(USER_DOES_NOT_EXIST.getErrorCode()+USER_DOES_NOT_EXIST.getErrorMessage());
@@ -59,12 +55,13 @@ public class UserServiceImpl implements userService {
         if(validate) {
             try {
                prepareNewUserToOnBoard(user);
+               log.info("USER_REGISTERED");
             } catch (NsquareException ex) {
                 log.error(USER_REGISTRATION_ERROR.getErrorCode()+USER_REGISTRATION_ERROR.getErrorMessage());
             }
         }
         else{
-            log.error(EMAIL_ALREADY_EXISTS.getErrorCode()+EMAIL_ALREADY_EXISTS.getErrorMessage());
+            log.error(EMAIL_ALREADY_EXISTS.getErrorCode().concat(" ")+EMAIL_ALREADY_EXISTS.getErrorMessage());
         }
         return user;
     }
@@ -76,6 +73,9 @@ public class UserServiceImpl implements userService {
      */
     private boolean validateUser(User user) {
         User userByEmail = userRepository.findByEmailAddress(user.getEmailAddress());
+        if(userByEmail == null){
+            return true;
+        }
         return  !userByEmail.getEmailAddress().equals(user.getEmailAddress());
     }
 
@@ -85,11 +85,12 @@ public class UserServiceImpl implements userService {
      */
     private void prepareNewUserToOnBoard(User user) {
         String randomPassword = RandomStringUtils.random(8,true,true);
-        String newUserNamePasswordCombination = user.getEmailAddress().concat("@")+randomPassword;
+        String newUserNamePasswordCombination = user.getEmailAddress().concat("|")+randomPassword;
+        String newUserNamePasswordCombinationbyte = Base64.getEncoder().encodeToString(newUserNamePasswordCombination.getBytes());
         userRepository.save(user);
         Token token = new Token();
         token.set_id(user.get_id());
-        token.setAuthToken(newUserNamePasswordCombination);
+        token.setAuthToken(newUserNamePasswordCombinationbyte);
         tokenRepository.save(token);
     }
 }
