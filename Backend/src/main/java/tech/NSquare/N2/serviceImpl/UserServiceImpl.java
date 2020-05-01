@@ -5,6 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import tech.NSquare.N2.models.LoginResponse;
 import tech.NSquare.N2.models.Token;
 import tech.NSquare.N2.models.User;
@@ -36,12 +37,29 @@ public class UserServiceImpl implements userService {
     public LoginResponse newLogin(String userAuthToken) {
 
         String userNamePasswordCombination= Base64.getEncoder().encodeToString(userAuthToken.getBytes());
+        Optional<User> userDetails=Optional.empty();
         Token userToken = tokenRepository.findByAuthToken(userNamePasswordCombination);
-        if (userToken.get_id().isEmpty()) {
+        if (ObjectUtils.isEmpty(userToken)) {
             log.error(USER_DOES_NOT_EXIST.getErrorCode()+USER_DOES_NOT_EXIST.getErrorMessage());
         }
-        Optional<User> userDetails = userRepository.findById(userToken.get_id());
-        return new LoginResponse(userDetails.get());
+        else {
+            userDetails = Optional.ofNullable(userRepository.findById(userToken.get_id()).orElseThrow(
+                    () -> new NsquareException(USER_NOT_FOUND.getErrorCode(),
+                            USER_NOT_FOUND.getErrorMessage())));
+        }
+       try {
+           if(userDetails.isPresent()) {
+               return new LoginResponse(userDetails.get());
+           }
+           else{
+               log.error(USER_DOES_NOT_EXIST.getErrorCode()+USER_DOES_NOT_EXIST.getErrorMessage());
+           }
+       }
+       catch(NullPointerException ex){
+
+           throw new NsquareException(USER_DOES_NOT_EXIST.getErrorCode(),USER_DOES_NOT_EXIST.getErrorMessage());
+       }
+      return  new LoginResponse();
     }
 
     /**

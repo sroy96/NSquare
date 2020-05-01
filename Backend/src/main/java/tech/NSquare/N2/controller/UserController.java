@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import tech.NSquare.N2.constants.URLConstants;
 import tech.NSquare.N2.models.LoginResponse;
@@ -29,10 +30,12 @@ public class UserController {
         LoginResponse loginResponseResponse = null;
         if (authToken != null) {
             loginResponseResponse = userServiceImpl.newLogin(authToken);
-            LOG.info(GeneralErrorEnum.SUCCESS.getErrorCode().concat(":") + GeneralErrorEnum.SUCCESS.getErrorMessage());
         } else {
             LOG.error(String.valueOf(new NsquareException(AUTH_TOKEN_NOT_PRESENT.getErrorCode(), AUTH_TOKEN_NOT_PRESENT.getErrorMessage())));
+        }
 
+        if(!ObjectUtils.isEmpty(loginResponseResponse)){
+            LOG.info(GeneralErrorEnum.SUCCESS.getErrorCode().concat(" : ") + GeneralErrorEnum.SUCCESS.getErrorMessage());
         }
         return ResponseEntity.ok().body(loginResponseResponse);
     }
