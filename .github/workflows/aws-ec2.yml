@@ -21,8 +21,7 @@ jobs:
     - uses: actions/checkout@v2
 
     # Runs a single command using the runners shell
-    - name: sed to ec2 bash 
-      run: sed -i 1d ~/.ssh/known_hosts
+
     - name: login to ec2 bash 
       run: ssh -i "src/main/resources/user-service.pem" ubuntu@ec2-13-233-196-33.ap-south-1.compute.amazonaws.com
     - name: username setup
