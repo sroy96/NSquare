@@ -18,8 +18,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.Optional;
 
-import static tech.NSquare.N2.models.enums.GeneralErrorEnum.EMAIL_ALREADY_EXISTS;
-import static tech.NSquare.N2.models.enums.GeneralErrorEnum.USER_REGISTRATION_ERROR;
+import static tech.NSquare.N2.models.enums.GeneralErrorEnum.*;
 
 @Slf4j
 @Service
@@ -31,20 +30,29 @@ public class UserServiceImpl implements userService {
     @Autowired
     private TokenRepository tokenRepository;
 
-
+    /**
+     * Login User that Exist
+     * @param userAuthToken
+     * @return
+     */
     @Override
     public LoginResponse newLogin(String userAuthToken) {
 
         String[] decodedString = new String(Base64.getDecoder().decode(userAuthToken)).split(":");
         String userNamePasswordCombination = decodedString[0];
         Token userToken = tokenRepository.findByAuthToken(userNamePasswordCombination);
-        if (userToken == null) {
-            return new LoginResponse();
+        if (userToken.get_id().isEmpty()) {
+            log.error(USER_DOES_NOT_EXIST.getErrorCode()+USER_DOES_NOT_EXIST.getErrorMessage());
         }
         Optional<User> userDetails = userRepository.findById(userToken.get_id());
         return new LoginResponse(userDetails.get());
     }
 
+    /**
+     * New User Creation
+     * @param user {@link User}
+     * @return User
+     */
     @Override
     public User newUserRegister(User user) {
         boolean validate =validateUser(user);
@@ -71,6 +79,10 @@ public class UserServiceImpl implements userService {
         return  !userByEmail.getEmailAddress().equals(user.getEmailAddress());
     }
 
+    /**
+     * Prepare Method to On board new User
+     * @param user {@link -> User}
+     */
     private void prepareNewUserToOnBoard(User user) {
         String randomPassword = RandomStringUtils.random(8,true,true);
         String newUserNamePasswordCombination = user.getEmailAddress().concat("@")+randomPassword;
