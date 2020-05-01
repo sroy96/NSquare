@@ -21,16 +21,22 @@ jobs:
     - uses: actions/checkout@v2
 
     # Runs a single command using the runners shell
-    - name: login to ec2 bash 
+    - name: sed to ec2 bash 
       run: sed -i 1d ~/.ssh/known_hosts
-           ssh -i "src/main/resources/user-service.pem" ubuntu@ec2-13-233-196-33.ap-south-1.compute.amazonaws.com
-           apt-get install git 
-           git config --global user.name "sroy96"
-           git config --global user.password "Sroyvit123#"
-           git clone https://github.com/sroy96/NSquare.git
-           cd NSquare
-           apt-get install maven
-           mvn clean install -DskipTests
+    - name: login to ec2 bash 
+      run: ssh -i "src/main/resources/user-service.pem" ubuntu@ec2-13-233-196-33.ap-south-1.compute.amazonaws.com
+    - name: username setup
+      run: git config --global user.name "sroy96"
+    - name: password setup 
+      run:  git config --global user.password "Sroyvit123#"
+    - name: clone repo 
+      run: git clone https://github.com/sroy96/NSquare.git
+    - name: folder to nsquare
+      run: cd NSquare
+    - name: build project 
+      run:  mvn clean install -DskipTests
+          
+          
 
 
     - name: verify
