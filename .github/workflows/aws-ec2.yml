@@ -22,7 +22,7 @@ jobs:
 
     # Runs a single command using the runners shell
     - name: login to ec2 bash 
-      run: ssh -i "user-service.pem" ubuntu@ec2-13-233-196-33.ap-south-1.compute.amazonaws.com
+      run: ssh -i "src/main/resources/user-service.pem" ubuntu@ec2-13-233-196-33.ap-south-1.compute.amazonaws.com
            apt-get install git 
            git config --global user.name "sroy96"
            git config --global user.password "Sroyvit123#"
