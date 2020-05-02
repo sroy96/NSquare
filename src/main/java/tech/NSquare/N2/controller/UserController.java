@@ -27,7 +27,7 @@ public class UserController {
 
 
     @GetMapping(URLConstants.LOG_IN_URL)
-    public ResponseEntity<LoginResponse> isAuthorized(@RequestHeader("auth_token") String authToken) {
+    public ResponseEntity<LoginResponse> isAuthorized(@RequestHeader("authToken") String authToken) {
         LoginResponse loginResponseResponse = null;
         if (authToken != null) {
             loginResponseResponse = userServiceImpl.newLogin(authToken);
