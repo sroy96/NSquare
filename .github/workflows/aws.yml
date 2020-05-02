@@ -19,8 +19,9 @@ jobs:
       run: mvn -B package --file pom.xml
     
     - name: Generate deployment package
-      run: zip -r deploy.zip * -x "**node_modules**" && cd target/ && ls
-    
+      run: zip -r deploy.zip  target/N2-0.0.1-SNAPSHOT.jar
+   
+   
     - name: Get timestamp
       uses: gerred/actions/current-time@master
       id: current-time
@@ -34,12 +35,16 @@ jobs:
         replace-with: '-'
         flags: 'g'
 
-#     - name: Beanstalk Deploy
-#       uses: einaregilsson/beanstalk-deploy@v10
-#       with:
-#         aws_access_key:  asd
-#         aws_secret_key: asd
-#         region: as
-#         application_name: asd
-#         environment_name: user-service
-#         version_label: 
+    - name: Beanstalk Deploy for app
+      uses: einaregilsson/beanstalk-deploy@v3
+      with:
+        aws_access_key: AKIAJOK7RLLE77DCSZJA
+        aws_secret_key: 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
+        application_name: user-service
+        environment_name: user-service
+        region: ap-south-1
+        version_label: "my-app-${{ steps.format-time.outputs.replaced }}"
+        deployment_package: deploy.zip
+
+    - name: Deployed!
+      run: echo App deployed to ELB
