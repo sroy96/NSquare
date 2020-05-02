@@ -24,7 +24,7 @@ public class User {
     private String emailAddress;
     private String countryCode;
     private String phoneNumber;
-    private boolean active;
+    private boolean active = true;
     private Map<Course, Boolean> courseEnrolled;
     private Map<ServiceLevel, Boolean> authorized;
 

@@ -51,18 +51,28 @@ public class UserServiceImpl implements userService {
                             USER_NOT_FOUND.getErrorMessage())));
         }
        try {
-           if(userDetails.isPresent()) {
+           if(userDetails.isPresent() && validateUserAccess(userDetails)) {
                return new LoginResponse(userDetails.get());
            }
            else{
-               log.error(USER_DOES_NOT_EXIST.getErrorCode()+USER_DOES_NOT_EXIST.getErrorMessage());
-               throw new NsquareException(USER_DOES_NOT_EXIST.getErrorCode(),USER_DOES_NOT_EXIST.getErrorMessage());
+               log.error(USER_ACCESS_REVOKED.getErrorCode().concat(" : ").concat(USER_ACCESS_REVOKED.getErrorMessage()));
+
+               throw new NsquareException(USER_ACCESS_REVOKED.getErrorCode(),USER_ACCESS_REVOKED.getErrorMessage());
            }
        }
        catch(NullPointerException ex){
 
            throw new NsquareException(USER_DOES_NOT_EXIST.getErrorCode(),USER_DOES_NOT_EXIST.getErrorMessage());
        }
+    }
+
+    /**
+     * Check if user is Active or not .
+     * @param userDetails
+     * @return
+     */
+    private boolean validateUserAccess(Optional<User> userDetails) {
+        return userDetails.map(User::isActive).orElse(false);
     }
 
     /**
@@ -108,6 +118,7 @@ public class UserServiceImpl implements userService {
         String randomPassword = RandomStringUtils.random(8,true,true);
         String newUserNamePasswordCombination = user.getEmailAddress().concat("|")+randomPassword;
         String newUserNamePasswordCombinationbyte = Base64.getEncoder().encodeToString(newUserNamePasswordCombination.getBytes());
+        user.setActive(true);
         userRepository.save(user);
         Token token = new Token();
         token.set_id(user.get_id());

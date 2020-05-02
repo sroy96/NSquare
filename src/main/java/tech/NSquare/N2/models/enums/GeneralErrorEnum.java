@@ -8,8 +8,8 @@ public enum GeneralErrorEnum {
     AUTH_TOKEN_NOT_PRESENT(10004,"AUTH_TOKEN_NOT_PRESENT", "Authenticator Token Not Found in Header"),
     EMAIL_ALREADY_EXISTS(10005,"EMAIL_EXISTS_IN_DB","Email Id Already in DB cannot create User"),
     USER_REGISTRATION_ERROR(10006,"USER_REGISTRATION_ERROR","User Cannot be Registered"),
-    USER_DOES_NOT_EXIST(10007,"USER_DOES_NOT_EXIST","User Not Available In Database")
-    ;
+    USER_DOES_NOT_EXIST(10007,"USER_DOES_NOT_EXIST","User Not Available In Database"),
+    USER_ACCESS_REVOKED(10008,"USER_ACCESS_REVOKED" ,"User is not Active Anymore" );
 
 
     private int code;
