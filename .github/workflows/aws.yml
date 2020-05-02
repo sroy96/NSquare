@@ -41,7 +41,7 @@ jobs:
         aws_access_key: AKIAJOK7RLLE77DCSZJA
         aws_secret_key: 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
         application_name: user-service
-        environment_name: user-service
+        environment_name: UserService-env
         region: ap-south-1
         version_label: "my-app-${{ steps.format-time.outputs.replaced }}"
         deployment_package: deploy.zip
