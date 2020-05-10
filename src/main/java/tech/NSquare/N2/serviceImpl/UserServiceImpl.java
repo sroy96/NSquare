@@ -50,11 +50,11 @@ public class UserServiceImpl implements userService, forgetPasswordService {
     RedisConfig redisConfig;
 
 
-
     /**
      * Login User that Exist
-     *  userAuthToken = Base64 UserNamePasswordCombo : Random
+     * userAuthToken = Base64 UserNamePasswordCombo : Random
      * Delimiter used ":"
+     *
      * @param userAuthToken
      * @return
      */
@@ -113,7 +113,7 @@ public class UserServiceImpl implements userService, forgetPasswordService {
                 log.info("USER_REGISTERED");
             } catch (NsquareException ex) {
                 log.error(USER_REGISTRATION_ERROR.getErrorCode() + USER_REGISTRATION_ERROR.getErrorMessage());
-                throw new NsquareException(USER_REGISTRATION_ERROR.getErrorCode() , USER_REGISTRATION_ERROR.getErrorMessage());
+                throw new NsquareException(USER_REGISTRATION_ERROR.getErrorCode(), USER_REGISTRATION_ERROR.getErrorMessage());
             }
         } else {
             log.error(EMAIL_ALREADY_EXISTS.getErrorCode().concat(" ") + EMAIL_ALREADY_EXISTS.getErrorMessage());
@@ -139,6 +139,7 @@ public class UserServiceImpl implements userService, forgetPasswordService {
     /**
      * Prepare Method to On board new User
      * UserNamePasswordCombination = email | password
+     *
      * @param user {@link -> User}
      */
     private void obBoardNewUser(User user) {
@@ -158,6 +159,7 @@ public class UserServiceImpl implements userService, forgetPasswordService {
      * Create Random token for respective email Id
      * Save it under Redis Cache and send password reset Auth Link to Email
      * Redis Map = {TOKEN:USERID}
+     *
      * @param userEmail {@link String}
      * @return ForgetPassword
      */
@@ -173,7 +175,7 @@ public class UserServiceImpl implements userService, forgetPasswordService {
             forgetPassword.setForgetToken(newToken);
             forgetPassword.setUserEmail(userEmail);
             log.info("Email sent to reset Password");
-            redisConfig.redisTemplate().opsForHash().put(CommonContants.REDIS_H_FORGETPASS, newToken,users.get_id());
+            redisConfig.cacheTemplate().put(newToken, users.get_id());
             return forgetPassword;
         } else {
             log.error("User Not Active Anymore cannot Reset passWord");
@@ -187,6 +189,7 @@ public class UserServiceImpl implements userService, forgetPasswordService {
      * and saving the Changes || { Delimiter is  token = new_passWord }
      * resetTokenNewPasswordCombo will be in Base64 encoded
      * key of the Redis is the Id of the User
+     *
      * @param resetTokenNewPasswordCombo {@link String}
      * @return User
      */
@@ -197,39 +200,37 @@ public class UserServiceImpl implements userService, forgetPasswordService {
         String[] partingCombo = decodedCombo.split("=");
         String resetToken = partingCombo[0];
         String newPassword = partingCombo[1];
-        try{
-            String userIdfromtheKey = redisConfig.redisTemplate().opsForHash().get(CommonContants.REDIS_H_FORGETPASS, resetToken).toString(); //-> return the userId associated from the key.
-            Optional<Token> token  = tokenRepository.findById(userIdfromtheKey);
-            return changeUserData(token,newPassword);
-        }
-        catch (NsquareException ex){
+        try {
+            String userIdfromtheKey = redisConfig.cacheTemplate().get(resetToken); //-> return the userId associated from the key.
+            Optional<Token> token = tokenRepository.findById(userIdfromtheKey);
+            return changeUserData(token, newPassword);
+        } catch (NsquareException ex) {
             GeneralErrorEnum enumObj = ApplicationUtils.retrieveEnumObject(new NsquareException(TOKEN_IS_NOT_IN_REDIS.getErrorCode(), TOKEN_IS_NOT_IN_REDIS.getErrorMessage()));
             return ApplicationUtils.getHttpStatus(enumObj.getHttpStatusErrorCode());
         }
     }
 
     /**
-     *
-     * @param token {@link Optional<Token>}
+     * @param token       {@link Optional<Token>}
      * @param newPassword {@link String} will be already decoded
      * @return
      */
-    private HttpStatus changeUserData( Optional<Token> token , String newPassword) {
-        AtomicReference<HttpStatus> httpStatus= new AtomicReference<>(getHttpStatus(217));
-        token.map(Token::getAuthToken).ifPresent(val->{
-            byte[] decodePrevAuthToken = Base64.getDecoder().decode(val);
-            String decodedCombo = new String(decodePrevAuthToken);
-            String [] partingCombo = decodedCombo.split("_");
-            String prevUserName = partingCombo[0];
-            String prevPassWord = partingCombo[1];
-            prevPassWord =  newPassword;
-            String newCombo = prevUserName.concat("_").concat(prevPassWord);
-            String newUserNamePasswordCombinationbyte = Base64.getEncoder().encodeToString(newCombo.getBytes(StandardCharsets.UTF_8));
-            token.get().setAuthToken(newUserNamePasswordCombinationbyte);
-            tokenRepository.save(token.get());
-            httpStatus.set(getHttpStatus(200));
-            log.info("Password Changed Successfully");
-        }
+    private HttpStatus changeUserData(Optional<Token> token, String newPassword) {
+        AtomicReference<HttpStatus> httpStatus = new AtomicReference<>(getHttpStatus(217));
+        token.map(Token::getAuthToken).ifPresent(val -> {
+                    byte[] decodePrevAuthToken = Base64.getDecoder().decode(val);
+                    String decodedCombo = new String(decodePrevAuthToken);
+                    String[] partingCombo = decodedCombo.split("_");
+                    String prevUserName = partingCombo[0];
+                    String prevPassWord = partingCombo[1];
+                    prevPassWord = newPassword;
+                    String newCombo = prevUserName.concat("_").concat(prevPassWord);
+                    String newUserNamePasswordCombinationbyte = Base64.getEncoder().encodeToString(newCombo.getBytes(StandardCharsets.UTF_8));
+                    token.get().setAuthToken(newUserNamePasswordCombinationbyte);
+                    tokenRepository.save(token.get());
+                    httpStatus.set(getHttpStatus(200));
+                    log.info("Password Changed Successfully");
+                }
         );
         return httpStatus.get();
     }
@@ -237,24 +238,29 @@ public class UserServiceImpl implements userService, forgetPasswordService {
 
     /**
      * Logout the user based on the the Header authset
+     *
      * @param auth {@link String}
      * @return HttpStatus
      */
     @Override
     public HttpStatus logoutUser(String auth) {
         try {
-            String getAuth = redisConfig.redisTemplate().opsForHash().get(REDIS_H_LOGIN,auth).toString();
-            redisConfig.redisTemplate().opsForHash().delete(REDIS_H_LOGIN, auth);
-            log.info("REDIS_LOGIN_TOKEN_DELETED");
-            return HttpStatus.OK;
+            String getAuth = redisConfig.cacheTemplate().get(auth);
+            if(null!=getAuth) {
+                redisConfig.cacheTemplate().remove(auth);
+                log.info("REDIS_LOGIN_TOKEN_DELETED");
+                return HttpStatus.OK;
+            }
+            else{
+                log.error("REDIS TOKEN NOT FOUND");
+                return HttpStatus.BAD_REQUEST;
+            }
 
-        }
-        catch (NullPointerException ex){
+        } catch (NullPointerException ex) {
             log.error("REDIS TOKEN NOT FOUND");
             return HttpStatus.BAD_REQUEST;
         }
     }
-
 
 
 }

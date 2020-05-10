@@ -122,7 +122,7 @@ public final class ApplicationUtils {
      */
     public final User authHeaderUserVerification(String authFromHeader){
         if(null!=authFromHeader){
-            String userId = redisConfig.redisTemplate().opsForHash().get(REDIS_H_FORGETPASS,authFromHeader).toString();
+            String userId = redisConfig.cacheTemplate().get(authFromHeader);
             if(null!=userId) {
                 User objectUser = userRepository.findBy_id(userId);
                 log.info("USER IS AUTHENTICATED");

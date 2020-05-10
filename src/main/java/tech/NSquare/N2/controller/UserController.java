@@ -36,6 +36,7 @@ public class UserController {
 
     /**
      * AuthToken From Backend name : "authSet"
+     *
      * @param authToken
      * @return
      */
@@ -49,12 +50,12 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        if(!ObjectUtils.isEmpty(loginResponseResponse)){
+        if (!ObjectUtils.isEmpty(loginResponseResponse)) {
             LOG.info(GeneralErrorEnum.SUCCESS.getErrorCode().concat(" : ") + GeneralErrorEnum.SUCCESS.getErrorMessage());
-            String uuid= UUID.randomUUID().toString();
+            String uuid = UUID.randomUUID().toString();
             assert false;
-            redisConfig.redisTemplate().opsForHash().put(REDIS_H_LOGIN,uuid,authToken);
-            return ResponseEntity.ok().header("authset",uuid).body(loginResponseResponse);
+            redisConfig.cacheTemplate().put(uuid, authToken);
+            return ResponseEntity.ok().header("authset", uuid).body(loginResponseResponse);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
@@ -62,24 +63,24 @@ public class UserController {
     }
 
     @PostMapping(URLConstants.NEW_USER)
-    public ResponseEntity<User> addNewUser(@RequestBody User user){
-        User users =userServiceImpl.newUserRegister(user);
+    public ResponseEntity<User> addNewUser(@RequestBody User user) {
+        User users = userServiceImpl.newUserRegister(user);
         return ResponseEntity.ok().body(users);
     }
 
     @PostMapping(URLConstants.FORGET_PASSWORD_REQUEST)
-    public ResponseEntity<ForgetPassword>newForgetPasswordRequest(@RequestParam String userEmail) throws Exception {
+    public ResponseEntity<ForgetPassword> newForgetPasswordRequest(@RequestParam String userEmail) throws Exception {
         ForgetPassword forgetPassword = userServiceImpl.newForgetPasswordRequest(userEmail);
         return ResponseEntity.status(HttpStatus.OK).body(forgetPassword);
     }
 
     @PutMapping(URLConstants.CREATE_NEW_PASSWORD)
-    public HttpStatus submitNewPassword(@RequestParam("token") String tokenFromEmail){
+    public HttpStatus submitNewPassword(@RequestParam("token") String tokenFromEmail) {
         return userServiceImpl.successfullyChangePassword(tokenFromEmail);
     }
 
     @GetMapping(URLConstants.LOGOUT)
-    public HttpStatus logout(@RequestHeader("authset") String auth){
+    public HttpStatus logout(@RequestHeader("authset") String auth) {
         return userServiceImpl.logoutUser(auth);
     }
 }
