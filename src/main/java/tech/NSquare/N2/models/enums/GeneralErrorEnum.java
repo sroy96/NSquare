@@ -15,6 +15,7 @@ public enum GeneralErrorEnum {
     RESET_TOKEN_NOT_VALID(100011,"RESET_TOKEN_NOT_VALID","Reset Token Expired"),
     TOKEN_IS_NOT_IN_REDIS(100012,"TOKEN_IS_NOT_IN_REDIS","Token in Cache Cannot Be retrived"),
     AUTH_TOKEN_EXPIED(100013,"AUTH_TOKEN_EXPIED","Token Expired"),
+    MAIL_AUTHENTICATION_FAILED(100014,"MAIL_AUTHENTICATION_FAILED","Email Authentication Failed from Our End"),
     UNKNOWN(0, "UNKNOWN", "Unknown");
 
 

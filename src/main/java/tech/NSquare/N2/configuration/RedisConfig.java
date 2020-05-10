@@ -19,8 +19,6 @@ public class RedisConfig {
         final JedisConnectionFactory factory = new JedisConnectionFactory();
         ObjectMapper om = new ObjectMapper();
         om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        // redis serialize
         Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
         jackson2JsonRedisSerializer.setObjectMapper(om);
         StringRedisTemplate template = new StringRedisTemplate(factory);

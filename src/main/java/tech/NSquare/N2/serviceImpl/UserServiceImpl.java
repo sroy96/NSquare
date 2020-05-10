@@ -24,6 +24,7 @@ import tech.NSquare.N2.util.GenerateMail;
 import tech.NSquare.N2.util.NsquareException;
 
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -112,9 +113,11 @@ public class UserServiceImpl implements userService, forgetPasswordService {
                 log.info("USER_REGISTERED");
             } catch (NsquareException ex) {
                 log.error(USER_REGISTRATION_ERROR.getErrorCode() + USER_REGISTRATION_ERROR.getErrorMessage());
+                throw new NsquareException(USER_REGISTRATION_ERROR.getErrorCode() , USER_REGISTRATION_ERROR.getErrorMessage());
             }
         } else {
             log.error(EMAIL_ALREADY_EXISTS.getErrorCode().concat(" ") + EMAIL_ALREADY_EXISTS.getErrorMessage());
+            throw new NsquareException(EMAIL_ALREADY_EXISTS.getErrorCode(), EMAIL_ALREADY_EXISTS.getErrorMessage());
         }
         return user;
     }
@@ -122,7 +125,7 @@ public class UserServiceImpl implements userService, forgetPasswordService {
     /**
      * Check if User Email Address is Already Present or not in User Document
      *
-     * @param user {@link-> User}
+     * @param user {@link User}
      * @return boolean
      */
     private boolean validateUser(User user) {
@@ -170,7 +173,7 @@ public class UserServiceImpl implements userService, forgetPasswordService {
             forgetPassword.setForgetToken(newToken);
             forgetPassword.setUserEmail(userEmail);
             log.info("Email sent to reset Password");
-            redisConfig.redisTemplate().opsForHash().put("forgetPass", newToken,users.get_id());
+            redisConfig.redisTemplate().opsForHash().put(CommonContants.REDIS_H_FORGETPASS, newToken,users.get_id());
             return forgetPassword;
         } else {
             log.error("User Not Active Anymore cannot Reset passWord");
@@ -221,9 +224,11 @@ public class UserServiceImpl implements userService, forgetPasswordService {
             String prevPassWord = partingCombo[1];
             prevPassWord =  newPassword;
             String newCombo = prevUserName.concat("_").concat(prevPassWord);
-            token.get().setAuthToken(newCombo);
+            String newUserNamePasswordCombinationbyte = Base64.getEncoder().encodeToString(newCombo.getBytes(StandardCharsets.UTF_8));
+            token.get().setAuthToken(newUserNamePasswordCombinationbyte);
             tokenRepository.save(token.get());
             httpStatus.set(getHttpStatus(200));
+            log.info("Password Changed Successfully");
         }
         );
         return httpStatus.get();

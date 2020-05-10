@@ -3,8 +3,6 @@ package tech.NSquare.N2.models;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
-import javax.mail.Address;
-
 
 @Component
 @Data
