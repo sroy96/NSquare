@@ -11,6 +11,8 @@ import javax.mail.internet.InternetHeaders;
 @Component
 public class GenerateMail {
 
+    @Value("${spring.mail.username}")
+    private String senderMail;
 
     @Autowired
     private EmailServiceImpl emailService;
@@ -18,7 +20,7 @@ public class GenerateMail {
         InternetHeaders headers = new InternetHeaders();
         headers.addHeader("Content-type", "text/html; charset=UTF-8");
         Mail mail = new Mail();
-        mail.setFrom("sauravarduino@gmail.com");
+        mail.setFrom(senderMail);
         mail.setTo(to);
         mail.setSubject("Password Reset Mail @NSquare");
         mail.setContent(token);
