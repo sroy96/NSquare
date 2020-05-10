@@ -1,6 +1,7 @@
 package tech.NSquare.N2.models;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -14,6 +15,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Data
+@EqualsAndHashCode
 @Document (value = "UserDetails")
 public class User {
 

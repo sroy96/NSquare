@@ -8,4 +8,6 @@ import tech.NSquare.N2.models.User;
 public interface UserRepository extends MongoRepository<User, String> {
 
     User findByEmailAddress(String emailAddress);
+
+    User findBy_id(String user_id);
 }

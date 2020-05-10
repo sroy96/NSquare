@@ -25,7 +25,6 @@ public class NsquareException extends RuntimeException implements Serializable {
         this.errorUUID = UUID.randomUUID();
     }
 
-
     public NsquareException(String errorCode, String message, Class objectType) {
         this(errorCode, message);
         this.setObjectType(objectType);
