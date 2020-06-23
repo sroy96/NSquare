@@ -10,20 +10,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import tech.NSquare.N2.configuration.RedisConfig;
 import tech.NSquare.N2.constants.CommonContants;
-import tech.NSquare.N2.models.ForgetPassword;
-import tech.NSquare.N2.models.LoginResponse;
-import tech.NSquare.N2.models.Token;
-import tech.NSquare.N2.models.User;
+import tech.NSquare.N2.models.*;
 import tech.NSquare.N2.models.enums.GeneralErrorEnum;
 import tech.NSquare.N2.repository.TokenRepository;
 import tech.NSquare.N2.repository.UserRepository;
 import tech.NSquare.N2.service.forgetPasswordService;
 import tech.NSquare.N2.service.userService;
 import tech.NSquare.N2.util.ApplicationUtils;
-import tech.NSquare.N2.util.GenerateMail;
 import tech.NSquare.N2.util.NsquareException;
 
 
+import javax.mail.MessagingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
@@ -259,6 +256,28 @@ public class UserServiceImpl implements userService, forgetPasswordService {
         }
     }
 
-
+    /**
+     * Join Us Button to notify us who wants to join and also
+     * to notify us with the details of the person wants to join
+     *
+     * @param guest {@link  Guest}
+     * @return Guest
+     */
+    @Override
+    public Guest joiningUser(Guest guest) {
+        try {
+            emailService.sendJoiningMail(guest);
+        }
+        catch (Exception ex){
+            log.error("Joining user email trigger fail..details are Email:"+guest.getEmail()+"\n Name:"+guest.getName(),ex);
+        }
+        try {
+            emailService.notifyUs(guest);
+        }
+        catch (Exception ex){
+            log.error("We failed our notification Mail engine",ex);
+        }
+        return guest;
+    }
 }
 

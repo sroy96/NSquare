@@ -10,4 +10,5 @@ public class URLConstants {
     public static final String CREATE_NEW_PASSWORD = "/new/password" ;
     public static  final Integer REDIS_TTL= 99999 ;
     public static final String LOGOUT = "/logout";
+    public static final String JOINING_USER = "/join" ;
 }

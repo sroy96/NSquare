@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.NSquare.N2.configuration.RedisConfig;
 import tech.NSquare.N2.constants.URLConstants;
 import tech.NSquare.N2.models.ForgetPassword;
+import tech.NSquare.N2.models.Guest;
 import tech.NSquare.N2.models.LoginResponse;
 import tech.NSquare.N2.models.User;
 import tech.NSquare.N2.models.enums.GeneralErrorEnum;
@@ -77,6 +78,12 @@ public class UserController {
     @PutMapping(URLConstants.CREATE_NEW_PASSWORD)
     public HttpStatus submitNewPassword(@RequestParam("token") String tokenFromEmail) {
         return userServiceImpl.successfullyChangePassword(tokenFromEmail);
+    }
+
+    @PostMapping(URLConstants.JOINING_USER)
+    public  ResponseEntity<Guest>newJoiningUserRequest(@RequestBody Guest guest){
+        Guest newGuest = userServiceImpl.joiningUser(guest);
+        return ResponseEntity.status(HttpStatus.OK).body(newGuest);
     }
 
     @GetMapping(URLConstants.LOGOUT)
