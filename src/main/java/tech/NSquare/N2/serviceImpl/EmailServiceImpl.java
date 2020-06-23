@@ -38,7 +38,13 @@ public class EmailServiceImpl {
 
     public void sendMail(String userMailId, String newToken) throws MessagingException {
         AwsMail awsMail = createMail(userMailId, newToken);
-         awsMailService.sendEmail(awsMail);
+        try {
+            awsMailService.sendEmail(awsMail);
+        }
+        catch(Exception ex){
+            log.error("MAIL_AUTHENTICATION_FAILED");
+            throw new NsquareException(MAIL_AUTHENTICATION_FAILED.getErrorCode(),MAIL_AUTHENTICATION_FAILED.getErrorMessage());
+        }
     }
 
     private AwsMail createMail(String toEmail, String token){
@@ -61,27 +67,27 @@ public class EmailServiceImpl {
 
 
 
-    public void sendSimpleMessage(Mail mail,String token) throws MessagingException {
-        InternetHeaders headers = new InternetHeaders();
-        headers.addHeader("Content-type", "text/html; charset=UTF-8");
-        var resetToken = resetUrl +token;
-        String html ="<h2>Reset password request </h2>" +
-                "<h3> Please click on the button to reset password \n </h3> "+
-                " <a target='_blank' href="+resetToken+"><button style>Reset your password</button></a>";
-        MimeMessage message = javaMailSender.createMimeMessage();
-        message.setRecipients(TO, String.valueOf(mail.getTo()));
-        message.setSubject(mail.getSubject());
-        message.setText(html,"UTF-8","html");
-        message.setFrom(mail.getFrom());
-        message.setReplyTo(new InternetAddress[]{
-                new InternetAddress((String) mail.getTo())
-        });
-        try {
-            javaMailSender.send(message);
-        }
-        catch(Exception ex){
-            log.error("MAIL_AUTHENTICATION_FAILED");
-            throw new NsquareException(MAIL_AUTHENTICATION_FAILED.getErrorCode(),MAIL_AUTHENTICATION_FAILED.getErrorMessage());
-        }
-    }
+//    public void sendSimpleMessage(Mail mail,String token) throws MessagingException {
+//        InternetHeaders headers = new InternetHeaders();
+//        headers.addHeader("Content-type", "text/html; charset=UTF-8");
+//        var resetToken = resetUrl +token;
+//        String html ="<h2>Reset password request </h2>" +
+//                "<h3> Please click on the button to reset password \n </h3> "+
+//                " <a target='_blank' href="+resetToken+"><button style>Reset your password</button></a>";
+//        MimeMessage message = javaMailSender.createMimeMessage();
+//        message.setRecipients(TO, String.valueOf(mail.getTo()));
+//        message.setSubject(mail.getSubject());
+//        message.setText(html,"UTF-8","html");
+//        message.setFrom(mail.getFrom());
+//        message.setReplyTo(new InternetAddress[]{
+//                new InternetAddress((String) mail.getTo())
+//        });
+//        try {
+//            javaMailSender.send(message);
+//        }
+//        catch(Exception ex){
+//            log.error("MAIL_AUTHENTICATION_FAILED");
+//            throw new NsquareException(MAIL_AUTHENTICATION_FAILED.getErrorCode(),MAIL_AUTHENTICATION_FAILED.getErrorMessage());
+//        }
+//    }
 }
