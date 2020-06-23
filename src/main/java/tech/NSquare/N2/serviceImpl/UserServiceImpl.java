@@ -28,8 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static tech.NSquare.N2.constants.CommonContants.REDIS_H_LOGIN;
 import static tech.NSquare.N2.models.enums.GeneralErrorEnum.*;
 import static tech.NSquare.N2.util.ApplicationUtils.getHttpStatus;
 
@@ -44,12 +42,10 @@ public class UserServiceImpl implements userService, forgetPasswordService {
     private TokenRepository tokenRepository;
 
     @Autowired
-    GenerateMail generateMail;
-
-    @Autowired
     RedisConfig redisConfig;
 
-
+    @Autowired
+    EmailServiceImpl emailService;
     /**
      * Login User that Exist
      * userAuthToken = Base64 UserNamePasswordCombo : Random
@@ -76,6 +72,7 @@ public class UserServiceImpl implements userService, forgetPasswordService {
         }
         try {
             if (userDetails.isPresent() && validateUserAccess(userDetails)) {
+                log.info("USER LOGGED IN SUCCESSFULLY");
                 return new LoginResponse(userDetails.get());
             } else {
                 log.error(USER_ACCESS_REVOKED.getErrorCode().concat(" -:- ").concat(USER_ACCESS_REVOKED.getErrorMessage()));
@@ -157,7 +154,7 @@ public class UserServiceImpl implements userService, forgetPasswordService {
 
     /**
      * Create Random token for respective email Id
-     * Save it under Redis Cache and send password reset Auth Link to Email
+     * Save it under Cache and send password reset Auth Link to Email
      * Redis Map = {TOKEN:USERID}
      *
      * @param userEmail {@link String}
@@ -171,7 +168,7 @@ public class UserServiceImpl implements userService, forgetPasswordService {
         ForgetPassword forgetPassword = new ForgetPassword();
         if (users.isActive()) {
             String newToken = RandomStringUtils.randomAlphanumeric(7);
-            generateMail.run(userEmail, newToken);
+            emailService.sendMail(userEmail,newToken);
             forgetPassword.setForgetToken(newToken);
             forgetPassword.setUserEmail(userEmail);
             log.info("Email sent to reset Password");
