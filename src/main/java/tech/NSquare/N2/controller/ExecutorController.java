@@ -20,6 +20,12 @@ public class ExecutorController {
     @Autowired
     private ExecutorServiceImpl executorService;
 
+    /**
+     * Submit the Code and Push the Payload to the AWS Queue
+     *
+     * @param codeExecutorPayLoadRequest {@link CodeExecutorPayLoadRequest }
+     * @return CodeExecutorPayLoadResponse
+     */
     @PostMapping(URLConstants.SEND_PAYLOAD)
     public ResponseEntity<CodeExecutorPayLoadResponse>submitCode(@RequestBody CodeExecutorPayLoadRequest codeExecutorPayLoadRequest){
         CodeExecutorPayLoadResponse codeExecutorPayLoadResponse=null;
@@ -35,7 +41,12 @@ public class ExecutorController {
     }
 
 
-
+    /**
+     * UI will poll this for the Code Execution Response
+     *
+     * @param key {@link String}
+     * @return CodeExecutorPayLoadResponse
+     */
     @GetMapping(URLConstants.GET_PAYLOAD)
     public ResponseEntity<CodeExecutorPayLoadResponse>getOutput(@RequestParam String key){
         CodeExecutorPayLoadResponse codeExecutorPayLoadResponse = null;
