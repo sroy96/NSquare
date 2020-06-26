@@ -16,15 +16,12 @@ import tech.NSquare.N2.models.User;
 import tech.NSquare.N2.models.enums.GeneralErrorEnum;
 import tech.NSquare.N2.serviceImpl.UserServiceImpl;
 import tech.NSquare.N2.util.NsquareException;
-
 import java.util.UUID;
-
-import static tech.NSquare.N2.constants.CommonContants.REDIS_H_LOGIN;
 import static tech.NSquare.N2.models.enums.GeneralErrorEnum.AUTH_TOKEN_NOT_PRESENT;
 
 
 @RestController
-@RequestMapping((URLConstants.BASE_URL))
+@RequestMapping(URLConstants.BASE_URL)
 public class UserController {
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 

@@ -24,16 +24,14 @@ public class AwsSESConfig {
     private String AWSAccessKey;
 
     @Value("${cloud.aws.credentials.secretKey}")
-    private  String AWSSecretKey;
+    private String AWSSecretKey;
 
     @Bean
     public AmazonSimpleEmailService amazonSimpleEmailService() {
         return AmazonSimpleEmailServiceClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(
-                            new BasicAWSCredentials(AWSAccessKey,AWSSecretKey)
+                        new BasicAWSCredentials(AWSAccessKey, AWSSecretKey)
                 ))
-                // Replace US_WEST_2 with the AWS Region you're using for
-                // Amazon SES.
                 .withRegion(Regions.SA_EAST_1).build();
     }
 

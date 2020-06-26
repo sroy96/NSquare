@@ -15,9 +15,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import tech.NSquare.N2.models.enums.GeneralErrorEnum;
-
-import static tech.NSquare.N2.constants.CommonContants.REDIS_H_FORGETPASS;
 import static tech.NSquare.N2.models.enums.GeneralErrorEnum.AUTH_TOKEN_NOT_PRESENT;
 import static tech.NSquare.N2.models.enums.GeneralErrorEnum.TOKEN_IS_NOT_IN_REDIS;
 

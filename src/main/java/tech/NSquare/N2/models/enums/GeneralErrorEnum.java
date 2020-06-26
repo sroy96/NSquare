@@ -16,6 +16,9 @@ public enum GeneralErrorEnum {
     TOKEN_IS_NOT_IN_REDIS(100012,"TOKEN_IS_NOT_IN_REDIS","Token in Cache Cannot Be retrived"),
     AUTH_TOKEN_EXPIED(100013,"AUTH_TOKEN_EXPIED","Token Expired"),
     MAIL_AUTHENTICATION_FAILED(100014,"MAIL_AUTHENTICATION_FAILED","Email Authentication Failed from Our End"),
+    PAYLOAD_SQS_DISPATCH_FAILED(100015,"PAYLOAD_SQS_DISPATCH_FAILED","SQS Failed to Dispatch the Data"),
+    DATABASE_INSERTION_ERROR(100016,"DATABASE_INSERTION_ERROR","Data Base Insertion Error"),
+    EXECUTION_KEY_NOT_PRESENT(100017,"EXECUTION_KEY_NOT_PRESENT","Execution Key to Execute the Code not Present"),
     UNKNOWN(0, "UNKNOWN", "Unknown");
 
 

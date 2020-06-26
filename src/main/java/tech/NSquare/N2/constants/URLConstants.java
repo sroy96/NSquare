@@ -11,4 +11,6 @@ public class URLConstants {
     public static  final Integer REDIS_TTL= 99999 ;
     public static final String LOGOUT = "/logout";
     public static final String JOINING_USER = "/join" ;
+    public static final String SEND_PAYLOAD = "/execute";
+    public static final String GET_PAYLOAD = "/execute";
 }

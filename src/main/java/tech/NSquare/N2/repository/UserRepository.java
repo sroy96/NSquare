@@ -9,5 +9,5 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     User findByEmailAddress(String emailAddress);
 
-    User findBy_id(String user_id);
+    User findBy_id(String uid);
 }
