@@ -38,8 +38,8 @@ jobs:
     - name: Beanstalk Deploy for app
       uses: einaregilsson/beanstalk-deploy@v10
       with:
-        aws_access_key: AKIAJOK7RLLE77DCSZJA
-        aws_secret_key: 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
+        aws_access_key: access_key
+        aws_secret_key: secret_key
         application_name: user-service-app
         environment_name: user-service-env
         region: ap-south-1
